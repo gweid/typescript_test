@@ -126,3 +126,72 @@ var Cat = /** @class */ (function (_super) {
 }(Animal));
 var cat = new Cat();
 cat.move();
+// 类的访问限定
+// public 公共的 在 TypeScript 的类中，成员都默认为 public, 被此限定符修饰的成员是可以被外部访问。
+var Dog = /** @class */ (function () {
+    function Dog() {
+    }
+    Dog.prototype.run = function () {
+        console.log("run");
+    };
+    return Dog;
+}());
+var dog = new Dog();
+dog.run();
+// private 私有的 只能类内部访问
+var Car = /** @class */ (function () {
+    function Car() {
+    }
+    Car.prototype.run = function () {
+        console.log("run");
+    };
+    Car.prototype.start = function () {
+        this.run();
+    };
+    return Car;
+}());
+var car = new Car();
+// car.run() // 报错
+car.start();
+// protected 受保护的 这种只能类内部使用或者子类访问
+var Fruit = /** @class */ (function () {
+    function Fruit() {
+    }
+    Fruit.prototype.eat = function () {
+        console.log("eat");
+    };
+    return Fruit;
+}());
+var Bananar = /** @class */ (function (_super) {
+    __extends(Bananar, _super);
+    function Bananar() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Bananar.prototype.eatBan = function () {
+        this.eat();
+    };
+    return Bananar;
+}(Fruit));
+var fruit = new Fruit();
+// fruit.eat()  // 报错
+var bananar = new Bananar();
+bananar.eatBan();
+// ------------------------------------- 函数
+// typescript 中函数不需要刻意去定义类型，会根据参数进行类型推断
+var add = function (a, b) { return a + b; };
+// 函数中的参数
+// 可选参数
+var add1 = function (a, b) { return a + (b ? b : 0); };
+// 默认参数
+var add2 = function (a, b) {
+    if (b === void 0) { b = 10; }
+    return a + b;
+};
+// 剩余参数
+var add3 = function (a) {
+    var arr = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        arr[_i - 1] = arguments[_i];
+    }
+    return a;
+};

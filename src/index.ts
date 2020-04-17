@@ -1,4 +1,4 @@
-//------------------------------------------基础类型
+//------------------------------------- 基础类型
 function greeter(person: string) {
     return "hello world"
 }
@@ -63,7 +63,7 @@ arr3.push("1")
 console.log(arr3) // true
 // console.log(arr3[2]) // false
 
-//---------------------------------------------- 枚举
+//-------------------------------------- 枚举
 // 枚举 值为数字具有正反向映射特性
 enum Dd {
     Up = 10,
@@ -184,4 +184,70 @@ const cat = new Cat()
 cat.move()
 
 // 类的访问限定
-// public 在 TypeScript 的类中，成员都默认为 public, 被此限定符修饰的成员是可以被外部访问。
+// public 公共的 在 TypeScript 的类中，成员都默认为 public, 被此限定符修饰的成员是可以被外部访问。
+class Dog {
+    public run(): void {
+        console.log("run")
+    }
+}
+const dog = new Dog()
+dog.run()
+// private 私有的 只能类内部访问
+class Car {
+    private run(): void {
+        console.log("run")
+    }
+
+    start(): void {
+        this.run()
+    }
+}
+const car = new Car()
+// car.run() // 报错
+car.start()
+// protected 受保护的 这种只能类内部使用或者子类访问
+class Fruit {
+    protected eat(): void {
+        console.log("eat")
+    }
+}
+class Bananar extends Fruit {
+    eatBan(): void {
+        this.eat()
+    }
+}
+const fruit = new Fruit()
+// fruit.eat()  // 报错
+const bananar = new Bananar()
+bananar.eatBan()
+
+// ------------------------------------- 函数
+// typescript 中函数不需要刻意去定义类型，会根据参数进行类型推断
+const add = (a: number, b: number) => a + b
+
+// 函数中的参数
+// 可选参数
+const add1 = (a: number, b?: number) => a + (b ? b : 0)
+// 默认参数
+const add2 = (a: number, b: number = 10) => a + b
+// 剩余参数
+const add3 = (a: number, ...arr: number[]) => arr.push(a)
+
+// 重载(Overload) 就是使用相同的函数名，传入不同数量的参数或不同类型的参数，以此创建出多个方法或产生不同结果。
+
+// ------------------------------------- 泛型
+// 泛型给予开发者创造灵活、可重用代码的能力
+
+// 在函数名称后面声明泛型变量 <T>，用于捕获开发者传入的参数类型，然后就可以使用T做参数类型和返回值类型。
+function returnItem<T>(param: T): T {
+    return param
+}
+// 多个
+function returnItem2<T, U>(tuple: [T, U]) {
+    return [tuple[0], tuple[1]]
+}
+// 对于数组
+function returnArr<T>(arr: Array<T>) {
+    console.log(arr.length)
+    return arr
+}
