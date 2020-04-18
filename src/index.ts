@@ -251,3 +251,105 @@ function returnArr<T>(arr: Array<T>) {
     console.log(arr.length)
     return arr
 }
+// 对于类
+class Stack<T> {
+    private arr: T[] = []
+
+    push(item: T) {
+        this.arr.push(item)
+    }
+}
+
+// 泛型约束(泛型可以是任意类型，但是当知道传入类型，可以做约束)
+type Param = number | string
+
+class Stack1<T extends Param> {
+    private arr: T[] = []
+
+    push(item: T) {
+        this.arr.push(item)
+    }
+}
+
+const stack1 = new Stack1<string | number>()
+// stack1.push({})  // 报错
+
+// 泛型约束2
+// function getValue(obj: object, key: string) {
+//     return obj[key]  // 报错，说 obj 上不存在 key
+// }
+// 使用泛型修改
+function getValue1<T extends object, U extends keyof T>(obj: T, key: U) {
+    return obj[key]
+}
+getValue1({ name: "jack" }, "name")
+
+//-------------------------------------- 类型断言与类型守卫
+// 1、类型断言   有些情况下 TS 并不能正确或者准确得推断类型,这时可能产生不必要的警告或者报错。
+// const person = {}
+// person.name = "jack"  // 报错 类型“{}”上不存在属性“name”
+// 修改
+interface Person {
+    name: string
+    age: number
+}
+const person = {} as Person
+person.name = "jack"
+// 但是类型断言不要滥用,在万不得已的情况下使用要谨慎,因为你强制把某类型断言会造成 TypeScript 丧失代码提示的能力。
+
+// 2、类型守卫   说白了就是缩小类型的范围
+// instanceof 类型保护是通过构造函数来细化类型的一种方式
+// class Person {
+//     name = "jack"
+//     age = 20
+// }
+// class Foods {
+//     name = "fish"
+//     size = 10
+// }
+
+// function getSomething(arg: Person | Foods) {
+//     if (arg instanceof Person) {
+//         console.log(arg.age)
+//     }
+//     if (arg instanceof Foods) {
+//         console.log(arg.size)
+//     }
+// }
+
+// in 跟上面的例子类似，x in y 表示 x 属性在 y 中存在。
+class Person {
+    name = "jack"
+    age = 20
+}
+class Foods {
+    name = "fish"
+    size = 10
+}
+
+function getSomething(arg: Person | Foods) {
+    if ("age" in arg) {
+        console.log(arg.age)
+    }
+    if ("size" in arg) {
+        console.log(arg.size)
+    }
+}
+
+// 字面量类型守卫
+type Foo = {
+    kind: "foo" // 字面量
+    foo: number
+}
+type Bar = {
+    kind: "bar" // 字面量
+    bar: "bar"
+}
+function doStuff(arg: Foo | Bar) {
+    if (arg.kind === "foo") {
+        console.log(arg.foo)
+    }
+    if (arg.kind === "bar") {
+        console.log(arg.bar)
+    }
+}
