@@ -353,3 +353,45 @@ function doStuff(arg: Foo | Bar) {
         console.log(arg.bar)
     }
 }
+
+//-------------------------------------- 高级类型
+// 交叉类型     交叉类型是将多个类型合并为一个类型。 这让我们可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。
+interface IAnyObj {
+    [prop: string]: any
+}
+
+function mixin<T extends IAnyObj, U extends IAnyObj>(first: T, second: U): T & U {
+    const ret = <T & U>{}
+    for (let id in first) {
+        ;(<T>ret)[id] = first[id]
+    }
+    for (let id in second) {
+        if (!ret.hasOwnPropery(id)) {
+            ;(<U>ret)[id] = second[id]
+        }
+    }
+    return ret
+}
+const x = mixin({ a: "a" }, { b: "b" })
+
+// 联合类型     使用 | 作为标记
+function formatCommandline(param: string[] | string): string {
+    let line = ""
+    if (typeof param === "string") {
+        line = param.trim()
+    } else {
+        line = param.join("").trim()
+    }
+
+    return line
+}
+
+// 类型别名     type
+type some = boolean | string
+
+// 类型别名可以是泛型
+type Container<T> = { value: T }
+
+// 类型别名看起来跟 interface 非常像，interface 只能用于定义对象类型，而 type 的声明方式除了对象之外还可以定义交叉、联合、原始类型等，类型声明的方式适用范围显然更加广泛。
+// 对于类型别名的使用： 能用 interface 就用 interface，不能就用 type
+
