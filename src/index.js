@@ -11,7 +11,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-//------------------------------------------基础类型
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+//------------------------------------- 基础类型
 function greeter(person) {
     return "hello world";
 }
@@ -65,7 +71,7 @@ var arr3 = ["123", 123];
 arr3.push("1");
 console.log(arr3); // true
 // console.log(arr3[2]) // false
-//---------------------------------------------- 枚举
+//-------------------------------------- 枚举
 // 枚举 值为数字具有正反向映射特性
 var Dd;
 (function (Dd) {
@@ -193,5 +199,195 @@ var add3 = function (a) {
     for (var _i = 1; _i < arguments.length; _i++) {
         arr[_i - 1] = arguments[_i];
     }
-    return a;
+    return arr.push(a);
 };
+// 重载(Overload) 就是使用相同的函数名，传入不同数量的参数或不同类型的参数，以此创建出多个方法或产生不同结果。
+// ------------------------------------- 泛型
+// 泛型给予开发者创造灵活、可重用代码的能力
+// 在函数名称后面声明泛型变量 <T>，用于捕获开发者传入的参数类型，然后就可以使用T做参数类型和返回值类型。
+function returnItem(param) {
+    return param;
+}
+// 多个
+function returnItem2(tuple) {
+    return [tuple[0], tuple[1]];
+}
+// 对于数组
+function returnArr(arr) {
+    console.log(arr.length);
+    return arr;
+}
+// 对于类
+var Stack = /** @class */ (function () {
+    function Stack() {
+        this.arr = [];
+    }
+    Stack.prototype.push = function (item) {
+        this.arr.push(item);
+    };
+    return Stack;
+}());
+var Stack1 = /** @class */ (function () {
+    function Stack1() {
+        this.arr = [];
+    }
+    Stack1.prototype.push = function (item) {
+        this.arr.push(item);
+    };
+    return Stack1;
+}());
+var stack1 = new Stack1();
+// stack1.push({})  // 报错
+// 泛型约束2
+// function getValue(obj: object, key: string) {
+//     return obj[key]  // 报错，说 obj 上不存在 key
+// }
+// 使用泛型修改
+function getValue1(obj, key) {
+    return obj[key];
+}
+getValue1({ name: "jack" }, "name");
+var person = {};
+person.name = "jack";
+// 但是类型断言不要滥用,在万不得已的情况下使用要谨慎,因为你强制把某类型断言会造成 TypeScript 丧失代码提示的能力。
+// 2、类型守卫   说白了就是缩小类型的范围
+// instanceof 类型保护是通过构造函数来细化类型的一种方式
+// class Person {
+//     name = "jack"
+//     age = 20
+// }
+// class Foods {
+//     name = "fish"
+//     size = 10
+// }
+// function getSomething(arg: Person | Foods) {
+//     if (arg instanceof Person) {
+//         console.log(arg.age)
+//     }
+//     if (arg instanceof Foods) {
+//         console.log(arg.size)
+//     }
+// }
+// in 跟上面的例子类似，x in y 表示 x 属性在 y 中存在。
+var Person = /** @class */ (function () {
+    function Person() {
+        this.name = "jack";
+        this.age = 20;
+    }
+    return Person;
+}());
+var Foods = /** @class */ (function () {
+    function Foods() {
+        this.name = "fish";
+        this.size = 10;
+    }
+    return Foods;
+}());
+function getSomething(arg) {
+    if ("age" in arg) {
+        console.log(arg.age);
+    }
+    if ("size" in arg) {
+        console.log(arg.size);
+    }
+}
+function doStuff(arg) {
+    if (arg.kind === "foo") {
+        console.log(arg.foo);
+    }
+    if (arg.kind === "bar") {
+        console.log(arg.bar);
+    }
+}
+//-------------------------------------- 高级类型
+// 交叉类型     交叉类型是将多个类型合并为一个类型。 这让我们可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。
+// interface IAnyObj {
+//     [prop: string]: any
+// }
+// function mixin<T extends IAnyObj, U extends IAnyObj>(first: T, second: U): T & U {
+//     const ret = <T & U>{}
+//     for (let id in first) {
+//         ;(<T>ret)[id] = first[id]
+//     }
+//     for (let id in second) {
+//         if (!ret.hasOwnPropery(id)) {
+//             ;(<U>ret)[id] = second[id]
+//         }
+//     }
+//     return ret
+// }
+// const x = mixin({ a: "a" }, { b: "b" })
+// 联合类型     使用 | 作为标记
+function formatCommandline(param) {
+    var line = "";
+    if (typeof param === "string") {
+        line = param.trim();
+    }
+    else {
+        line = param.join("").trim();
+    }
+    return line;
+}
+// 类型别名看起来跟 interface 非常像，interface 只能用于定义对象类型，而 type 的声明方式除了对象之外还可以定义交叉、联合、原始类型等，类型声明的方式适用范围显然更加广泛。
+// 对于类型别名的使用： 能用 interface 就用 interface，不能就用 type
+// ------------------------------------- 可辨识联合类型
+// 字面量类型
+// 字面量（Literal Type）主要分为 真值字面量类型（boolean literal types）,数字字面量类型（numeric literal types）,枚举字面量类型（enum literal types）,大整数字面量类型（bigInt literal types）和字符串字面量类型（string literal types）。
+var af = 2333; // ok
+var ab = 2; // ok
+var ao = 76; // ok
+var ax = 0x514; // ok
+var c = "xiaomuzhu"; // ok
+var d = false; // ok
+function move(distance, direction) { }
+move(20, "East");
+var userReducer = function (userAction) {
+    switch (userAction.action) {
+        case "delete":
+            console.log(userAction.id);
+            break;
+        default:
+            break;
+    }
+};
+// userAction.action 就是辨识的关键, 被称为可辨识的标签
+//-------------------------------------- 装饰器
+// 装饰器就是在给一个函数拓展额外的功能，本质上也是一个函数
+// 类装饰器
+function addAge(constructor) {
+    constructor.prototype.age = 18;
+}
+var Person11 = /** @class */ (function () {
+    function Person11() {
+        this.name = "jack";
+    }
+    Person11 = __decorate([
+        addAge
+    ], Person11);
+    return Person11;
+}());
+var person11 = new Person11();
+console.log(person11.age); // 18
+// 当装饰器作为修饰类的时候，会把构造器传递进去。 constructor.prototype.age 就是在每一个实例化对象上面添加一个 age 值
+// 属性/方法装饰似器
+// 有三个参数
+// target —— 当前对象的原型，也就是说，假设 Employee 是对象，那么 target 就是 Employee.prototype
+// propertyKey —— 方法的名称
+// descriptor —— 方法的属性描述符，即 Object.getOwnPropertyDescriptor(Employee.prototype, propertyKey)
+function f() {
+    console.log("f(): evaluated");
+    return function (target, propertyKey, descriptor) {
+        console.log("f(): called");
+    };
+}
+var C = /** @class */ (function () {
+    function C() {
+    }
+    C.prototype.method = function () { };
+    __decorate([
+        f()
+    ], C.prototype, "method", null);
+    return C;
+}());
+var c1 = new C();
+c1.method();

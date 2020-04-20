@@ -356,23 +356,23 @@ function doStuff(arg: Foo | Bar) {
 
 //-------------------------------------- 高级类型
 // 交叉类型     交叉类型是将多个类型合并为一个类型。 这让我们可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。
-interface IAnyObj {
-    [prop: string]: any
-}
+// interface IAnyObj {
+//     [prop: string]: any
+// }
 
-function mixin<T extends IAnyObj, U extends IAnyObj>(first: T, second: U): T & U {
-    const ret = <T & U>{}
-    for (let id in first) {
-        ;(<T>ret)[id] = first[id]
-    }
-    for (let id in second) {
-        if (!ret.hasOwnPropery(id)) {
-            ;(<U>ret)[id] = second[id]
-        }
-    }
-    return ret
-}
-const x = mixin({ a: "a" }, { b: "b" })
+// function mixin<T extends IAnyObj, U extends IAnyObj>(first: T, second: U): T & U {
+//     const ret = <T & U>{}
+//     for (let id in first) {
+//         ;(<T>ret)[id] = first[id]
+//     }
+//     for (let id in second) {
+//         if (!ret.hasOwnPropery(id)) {
+//             ;(<U>ret)[id] = second[id]
+//         }
+//     }
+//     return ret
+// }
+// const x = mixin({ a: "a" }, { b: "b" })
 
 // 联合类型     使用 | 作为标记
 function formatCommandline(param: string[] | string): string {
@@ -412,13 +412,13 @@ move(20, "East")
 
 // 类型字面量
 // 类型字面量(Type Literal)不同于字面量类型（Literal Type),跟 js 中的对象字面量的语法相似
-type Foo55 = {
-    baz: [number, "xiaomuzhu"]
-    toString(): string
-    readonly [Symbol.iterator]: "github"
-    0x1: "foo"
-    bar: 12n
-}
+// type Foo55 = {
+//     baz: [number, "xiaomuzhu"]
+//     toString(): string
+//     readonly [Symbol.iterator]: "github"
+//     0x1: "foo"
+//     bar: 12n
+// }
 
 // 可辨识联合类型
 interface Info {
@@ -464,3 +464,20 @@ console.log(person11.age) // 18
 // 当装饰器作为修饰类的时候，会把构造器传递进去。 constructor.prototype.age 就是在每一个实例化对象上面添加一个 age 值
 
 // 属性/方法装饰似器
+// 有三个参数
+// target —— 当前对象的原型，也就是说，假设 Employee 是对象，那么 target 就是 Employee.prototype
+// propertyKey —— 方法的名称
+// descriptor —— 方法的属性描述符，即 Object.getOwnPropertyDescriptor(Employee.prototype, propertyKey)
+function f() {
+    console.log("f(): evaluated")
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        console.log("f(): called")
+    }
+}
+class C {
+    @f()
+    method() {}
+}
+
+const c1 = new C()
+c1.method()
