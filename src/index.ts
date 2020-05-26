@@ -60,10 +60,12 @@ const arr1: [string, number] = ["name", 123]
 // Typescript 允许向元组中使用数组的 push 方法插入新元素(但不允许访问插入的属性)
 const arr3: [string, number] = ["123", 123]
 arr3.push("1")
-console.log(arr3) // true
-// console.log(arr3[2]) // false
+console.log(arr3) // 可以
+// console.log(arr3[2]) // 不可以
 
 //-------------------------------------- 枚举
+// 枚举是对 js 标准数据类型的补充，声明一组带名字的常量；按照枚举成员的类型可归为两大类：数字枚举类型和字符串枚举类型
+
 // 枚举 值为数字具有正反向映射特性
 enum Dd {
     Up = 10,
@@ -135,7 +137,7 @@ function getArea(config: Config): { area: Number } {
 // 解决：第一种， 使用断言
 let ret: object = getArea({ height: 5 } as Config)
 console.log(ret)
-// 解决：第二种， 添加字符串索引签名：这样Config可以有任意数量的属性，并且只要不是width，那么就无所谓他们的类型是什么了。
+// 解决：第二种， 添加字符串索引签名：这样 Config 可以有任意数量的属性，并且只要不是 width，那么就无所谓他们的类型是什么了。
 interface Config2 {
     width?: number
     [propName: string]: any
@@ -169,6 +171,20 @@ interface VipAdmin extends Admin {
 interface VipAdmin extends User, Admin {
     level: number
 }
+
+// ------------------------------------- 函数
+// typescript 中函数不需要刻意去定义类型，会根据参数进行类型推断
+const add = (a: number, b: number) => a + b
+
+// 函数中的参数
+// 可选参数
+const add1 = (a: number, b?: number) => a + (b ? b : 0)
+// 默认参数
+const add2 = (a: number, b: number = 10) => a + b
+// 剩余参数
+const add3 = (a: number, ...arr: number[]) => arr.push(a)
+
+// 重载(Overload) 就是使用相同的函数名，传入不同数量的参数或不同类型的参数，以此创建出多个方法或产生不同结果。
 
 //-------------------------------------- 类(Class)
 // 用 abstract 定义抽象类和在抽象类内部定义抽象方法
@@ -221,20 +237,6 @@ const fruit = new Fruit()
 const bananar = new Bananar()
 bananar.eatBan()
 
-// ------------------------------------- 函数
-// typescript 中函数不需要刻意去定义类型，会根据参数进行类型推断
-const add = (a: number, b: number) => a + b
-
-// 函数中的参数
-// 可选参数
-const add1 = (a: number, b?: number) => a + (b ? b : 0)
-// 默认参数
-const add2 = (a: number, b: number = 10) => a + b
-// 剩余参数
-const add3 = (a: number, ...arr: number[]) => arr.push(a)
-
-// 重载(Overload) 就是使用相同的函数名，传入不同数量的参数或不同类型的参数，以此创建出多个方法或产生不同结果。
-
 // ------------------------------------- 泛型
 // 泛型给予开发者创造灵活、可重用代码的能力
 
@@ -285,9 +287,9 @@ function getValue1<T extends object, U extends keyof T>(obj: T, key: U) {
 getValue1({ name: "jack" }, "name")
 
 //-------------------------------------- 类型断言与类型守卫
-// 1、类型断言   有些情况下 TS 并不能正确或者准确得推断类型,这时可能产生不必要的警告或者报错。
+// 1、类型断言   有些情况下 TS 并不能正确或者准确得推断类型, 这时可能产生不必要的警告或者报错。
 // const person = {}
-// person.name = "jack"  // 报错 类型“{}”上不存在属性“name”
+// person.name = "jack"  // 报错 类型 “{}” 上不存在属性 “name”
 // 修改
 interface Person {
     name: string
@@ -295,7 +297,7 @@ interface Person {
 }
 const person = {} as Person
 person.name = "jack"
-// 但是类型断言不要滥用,在万不得已的情况下使用要谨慎,因为你强制把某类型断言会造成 TypeScript 丧失代码提示的能力。
+// 但是类型断言不要滥用, 在万不得已的情况下使用要谨慎, 因为你强制把某类型断言会造成 TypeScript 丧失代码提示的能力。
 
 // 2、类型守卫   说白了就是缩小类型的范围
 // instanceof 类型保护是通过构造函数来细化类型的一种方式
@@ -318,16 +320,16 @@ person.name = "jack"
 // }
 
 // in 跟上面的例子类似，x in y 表示 x 属性在 y 中存在。
-class Person {
-    name = "jack"
-    age = 20
+interface Persons {
+    name: string
+    age: number
 }
-class Foods {
-    name = "fish"
-    size = 10
+interface Foods {
+    name: string
+    size: number
 }
 
-function getSomething(arg: Person | Foods) {
+function getSomething(arg: Persons | Foods) {
     if ("age" in arg) {
         console.log(arg.age)
     }
@@ -335,6 +337,8 @@ function getSomething(arg: Person | Foods) {
         console.log(arg.size)
     }
 }
+
+console.log(getSomething({ name: "kkk", age: 2000000 }))
 
 // 字面量类型守卫
 type Foo = {
@@ -394,6 +398,12 @@ type Container<T> = { value: T }
 
 // 类型别名看起来跟 interface 非常像，interface 只能用于定义对象类型，而 type 的声明方式除了对象之外还可以定义交叉、联合、原始类型等，类型声明的方式适用范围显然更加广泛。
 // 对于类型别名的使用： 能用 interface 就用 interface，不能就用 type
+
+// 索引类型
+
+// 映射类型
+
+// 条件类型
 
 // ------------------------------------- 可辨识联合类型
 // 字面量类型
@@ -468,16 +478,18 @@ console.log(person11.age) // 18
 // target —— 当前对象的原型，也就是说，假设 Employee 是对象，那么 target 就是 Employee.prototype
 // propertyKey —— 方法的名称
 // descriptor —— 方法的属性描述符，即 Object.getOwnPropertyDescriptor(Employee.prototype, propertyKey)
-function f() {
+function method() {
     console.log("f(): evaluated")
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         console.log("f(): called")
     }
 }
 class C {
-    @f()
-    method() {}
+    @method()
+    say() {
+        return "hello"
+    }
 }
 
 const c1 = new C()
-c1.method()
+c1.say()

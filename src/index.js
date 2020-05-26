@@ -69,9 +69,10 @@ var arr1 = ["name", 123];
 // Typescript 允许向元组中使用数组的 push 方法插入新元素(但不允许访问插入的属性)
 var arr3 = ["123", 123];
 arr3.push("1");
-console.log(arr3); // true
-// console.log(arr3[2]) // false
+console.log(arr3); // 可以
+// console.log(arr3[2]) // 不可以
 //-------------------------------------- 枚举
+// 枚举是对 js 标准数据类型的补充，声明一组带名字的常量；按照枚举成员的类型可归为两大类：数字枚举类型和字符串枚举类型
 // 枚举 值为数字具有正反向映射特性
 var Dd;
 (function (Dd) {
@@ -111,6 +112,26 @@ function getArea2(config) {
 }
 var ret2 = getArea2({ height: 10 });
 console.log(ret2);
+// ------------------------------------- 函数
+// typescript 中函数不需要刻意去定义类型，会根据参数进行类型推断
+var add = function (a, b) { return a + b; };
+// 函数中的参数
+// 可选参数
+var add1 = function (a, b) { return a + (b ? b : 0); };
+// 默认参数
+var add2 = function (a, b) {
+    if (b === void 0) { b = 10; }
+    return a + b;
+};
+// 剩余参数
+var add3 = function (a) {
+    var arr = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        arr[_i - 1] = arguments[_i];
+    }
+    return arr.push(a);
+};
+// 重载(Overload) 就是使用相同的函数名，传入不同数量的参数或不同类型的参数，以此创建出多个方法或产生不同结果。
 //-------------------------------------- 类(Class)
 // 用 abstract 定义抽象类和在抽象类内部定义抽象方法
 var Animal = /** @class */ (function () {
@@ -182,26 +203,6 @@ var fruit = new Fruit();
 // fruit.eat()  // 报错
 var bananar = new Bananar();
 bananar.eatBan();
-// ------------------------------------- 函数
-// typescript 中函数不需要刻意去定义类型，会根据参数进行类型推断
-var add = function (a, b) { return a + b; };
-// 函数中的参数
-// 可选参数
-var add1 = function (a, b) { return a + (b ? b : 0); };
-// 默认参数
-var add2 = function (a, b) {
-    if (b === void 0) { b = 10; }
-    return a + b;
-};
-// 剩余参数
-var add3 = function (a) {
-    var arr = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        arr[_i - 1] = arguments[_i];
-    }
-    return arr.push(a);
-};
-// 重载(Overload) 就是使用相同的函数名，传入不同数量的参数或不同类型的参数，以此创建出多个方法或产生不同结果。
 // ------------------------------------- 泛型
 // 泛型给予开发者创造灵活、可重用代码的能力
 // 在函数名称后面声明泛型变量 <T>，用于捕获开发者传入的参数类型，然后就可以使用T做参数类型和返回值类型。
@@ -249,40 +250,6 @@ function getValue1(obj, key) {
 getValue1({ name: "jack" }, "name");
 var person = {};
 person.name = "jack";
-// 但是类型断言不要滥用,在万不得已的情况下使用要谨慎,因为你强制把某类型断言会造成 TypeScript 丧失代码提示的能力。
-// 2、类型守卫   说白了就是缩小类型的范围
-// instanceof 类型保护是通过构造函数来细化类型的一种方式
-// class Person {
-//     name = "jack"
-//     age = 20
-// }
-// class Foods {
-//     name = "fish"
-//     size = 10
-// }
-// function getSomething(arg: Person | Foods) {
-//     if (arg instanceof Person) {
-//         console.log(arg.age)
-//     }
-//     if (arg instanceof Foods) {
-//         console.log(arg.size)
-//     }
-// }
-// in 跟上面的例子类似，x in y 表示 x 属性在 y 中存在。
-var Person = /** @class */ (function () {
-    function Person() {
-        this.name = "jack";
-        this.age = 20;
-    }
-    return Person;
-}());
-var Foods = /** @class */ (function () {
-    function Foods() {
-        this.name = "fish";
-        this.size = 10;
-    }
-    return Foods;
-}());
 function getSomething(arg) {
     if ("age" in arg) {
         console.log(arg.age);
@@ -291,6 +258,7 @@ function getSomething(arg) {
         console.log(arg.size);
     }
 }
+console.log(getSomething({ name: "kkk", age: 2000000 }));
 function doStuff(arg) {
     if (arg.kind === "foo") {
         console.log(arg.foo);
@@ -330,6 +298,9 @@ function formatCommandline(param) {
 }
 // 类型别名看起来跟 interface 非常像，interface 只能用于定义对象类型，而 type 的声明方式除了对象之外还可以定义交叉、联合、原始类型等，类型声明的方式适用范围显然更加广泛。
 // 对于类型别名的使用： 能用 interface 就用 interface，不能就用 type
+// 索引类型
+// 映射类型
+// 条件类型
 // ------------------------------------- 可辨识联合类型
 // 字面量类型
 // 字面量（Literal Type）主要分为 真值字面量类型（boolean literal types）,数字字面量类型（numeric literal types）,枚举字面量类型（enum literal types）,大整数字面量类型（bigInt literal types）和字符串字面量类型（string literal types）。
@@ -374,7 +345,7 @@ console.log(person11.age); // 18
 // target —— 当前对象的原型，也就是说，假设 Employee 是对象，那么 target 就是 Employee.prototype
 // propertyKey —— 方法的名称
 // descriptor —— 方法的属性描述符，即 Object.getOwnPropertyDescriptor(Employee.prototype, propertyKey)
-function f() {
+function method() {
     console.log("f(): evaluated");
     return function (target, propertyKey, descriptor) {
         console.log("f(): called");
@@ -383,11 +354,13 @@ function f() {
 var C = /** @class */ (function () {
     function C() {
     }
-    C.prototype.method = function () { };
+    C.prototype.say = function () {
+        return "hello";
+    };
     __decorate([
-        f()
-    ], C.prototype, "method", null);
+        method()
+    ], C.prototype, "say");
     return C;
 }());
 var c1 = new C();
-c1.method();
+c1.say();
